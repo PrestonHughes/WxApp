@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="refresh" content="300" />
+        <title>Weather</title>
+        <link rel="stylesheet" href="main.css" />
+    </head>
+    <body class="body">
+        <div class="appwrap">
+            <main> 
+                <section class="location">
+                    <div class="city">Tuscaloosa, Alabama</div>                    
+                </section>
+                <div class="current">  
+                    <div class="tempContainer">
+                        <div class="tempChild">
+                            <img id="curWxImg" src="https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png" />
+                            
+                        </div>
+                        <div class="tempChild">
+                            <div class="temp">--<span>°F</span></div>                        
+                        </div>
+                    </div>
+                    <div class="desc">Description</div>
+                    <div class="subdetails">                    
+                        <div class="highlow">--° F / --° F</div>  
+                        <div class="precip">--% Chance of Rain</div> 
+                        <div class="wind">Wind: -- mph</div>      
+                    </div>           
+                </div>         
+                <div class="lastUpdate">Last Updated: (updating now...)</div>      
+
+            </main>
+        </div>      
+        <div class="mapcontainer">
+            <div class="topleft">
+                <img id="sepic" src="https://radar.weather.gov/ridge/Conus/Loop/NatLoop.gif" alt="Weather Map Southeast Detail"/>	
+            </div>
+        </div>
+        
+        <div class="grid-container">
+            <div class="Day1">
+                <div class="dow">
+                    <div class="dow1">Today</div>
+                </div>
+                <div class="img">
+                    <img id="FcImg1" src="https://ssl.gstatic.com/onebox/weather/64/cloudy.png" />
+                </div>
+                <div class="FcHilow">
+                    <div class="FcHiLow1">58°  48°</div>
+                </div>
+            </div>
+            <div class="Day2">
+                <div class="dow">
+                    <div class="dow2">Friday</div>
+                </div>
+                <div class="img">
+                    <img id="FcImg2" src="https://ssl.gstatic.com/onebox/weather/64/rain.png" />
+                </div>
+                <div class="FcHilow">
+                    <div class="FcHiLow2">53°  36°</div>
+                </div>
+            </div>
+            <div class="Day3">
+                <div class="dow">
+                    <div class="dow3">Saturday</div>
+                </div>
+                <div class="img">
+                    <img id="FcImg3" src="https://ssl.gstatic.com/onebox/weather/64/sunny.png" />
+                </div>
+                <div class="FcHilow">
+                    <div class="FcHiLow3">53°  36°</div>
+                </div>
+            </div>
+            <div class="Day4">
+                <div class="dow">
+                    <div class="dow4">Sunday</div>
+                </div>
+                <div class="img">
+                    <img id="FcImg4" src="https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png" />
+                </div>
+                <div class="FcHilow">
+                    <div class="FcHiLow4">53°  36°</div>
+                </div>
+            </div>
+            <div class="Day5">
+                <div class="dow">
+                    <div class="dow5">Sunday</div>
+                </div>
+                <div class="img">
+                    <img id="FcImg5" src="https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png" />
+                </div>
+                <div class="FcHilow">
+                    <div class="FcHiLow5">53°  36°</div>
+                </div>
+            </div>
+          </div>
+          <div class="verboseArea">
+            
+            <div class="dayVerb">
+                <div class="dayTitle">Today:</div>
+                <div class="dayDesc"><br>---</div>                
+            </div>
+            <div class="nightVerb">
+                <div class="nightTitle">Tonight:</div>
+                <div> </div>
+                <div class="nightDesc"><br>---</div>                 
+            </div>
+        </div> 
+        <div class="curDate">Today's Date</div>       
+
+        <script>    
+            function getDarkHoursIcon(desc) {
+                var icon = '';
+                switch (desc) {
+                    case 'Mostly sunny':
+                        icon = 'night_clear.png';
+                        break;
+                    case 'Sunny':
+                        icon = 'night_clear.png';
+                        break;
+                    case 'Partly cloudy':
+                        icon = 'night_cloudy.png';
+                        break; 
+                    case 'Rain':
+                        icon = 'night_rain.png';
+                        break;  
+                    case 'Showers':
+                        icon = 'night_rain.png';
+                        break; 
+                    case 'Cloudy':
+                        icon = 'night_cloudy.png';
+                        break;  
+                    case 'Snow':
+                        icon = 'night_snow.png';
+                        break; 
+                    default:
+                        icon = 'night_clear.png';
+                        break;                                                                                              
+                }
+                return icon;
+            }
+
+            function fullDayName(abbv) {
+                var retVal;
+                switch(abbv) {
+                    case 'Mon':
+                        retVal = 'Monday';
+                        break;
+                    case 'Tue':
+                        retVal = 'Tuesday';
+                        break; 
+                    case 'Wed':
+                        retVal = 'Wednesday';
+                        break;
+                    case 'Thu':
+                        retVal = 'Thursday';
+                        break; 
+                    case 'Fri':
+                        retVal = 'Friday';
+                        break;  
+                    case 'Sat':
+                        retVal = 'Saturday';
+                        break; 
+                    case 'Sun':
+                        retVal = 'Sunday';
+                        break;                       
+                }
+                return retVal;
+            }
+
+            async function loadWeather() {
+                //#region Properties
+                var temp = document.querySelector('.temp');
+                var highlow = document.querySelector('.highlow');
+                var desc = document.querySelector('.desc');
+                var curDate = document.querySelector('.curDate');
+                var curRainPerc = document.querySelector('.precip');
+                var curWindyness = document.querySelector('.wind'); //LOL 
+                var lastUpdated = document.querySelector('.lastUpdate');
+                var dow1 = document.querySelector('.dow1');
+                var dow2 = document.querySelector('.dow2');
+                var dow3 = document.querySelector('.dow3');
+                var dow4 = document.querySelector('.dow4');
+                var dow5 = document.querySelector('.dow5');
+                var FcHiLow1 = document.querySelector(".FcHiLow1");
+                var FcHiLow2 = document.querySelector(".FcHiLow2");
+                var FcHiLow3 = document.querySelector(".FcHiLow3");
+                var FcHiLow4 = document.querySelector(".FcHiLow4");
+                var FcHiLow5 = document.querySelector(".FcHiLow5");
+
+                var weekday = new Array(7);
+                weekday[0] = "Sunday";
+                weekday[1] = "Monday";
+                weekday[2] = "Tuesday";
+                weekday[3] = "Wednesday";
+                weekday[4] = "Thursday";
+                weekday[5] = "Friday";
+                weekday[6] = "Saturday";   
+                
+                var realMonth = new Array(12);
+                realMonth[0] = "January";
+                realMonth[1] = "February";
+                realMonth[2] = "March";
+                realMonth[3] = "April";
+                realMonth[4] = "May";
+                realMonth[5] = "June";
+                realMonth[6] = "July";
+                realMonth[7] = "August";
+                realMonth[8] = "September";
+                realMonth[9] = "October";
+                realMonth[10] = "November";
+                realMonth[11] = "December";
+                //#endregion
+
+                const res = await fetch('http://localhost:3000/weather');
+                const wx = await res.json();
+                                                
+                var lu = new Date(wx.lastUpdate);
+                var luHr = lu.getHours();   
+                var luMin = lu.getUTCMinutes();     
+                var amPm = "am" 
+                if (luHr > 12) {
+                    luHr = luHr - 12;
+                    amPm = "pm";
+                } 
+                lastUpdated.innerHTML = 'Last Updated: ' + luHr+ ":" + String(luMin).padStart(2, '0') + " " + amPm;
+
+                if (amPm == "pm" && luHr >= 5 || amPm == "am" && luHr < 6)  { //Dark hours
+                    document.querySelector(".body").style.background = "url('bg.jpg')";
+                    document.getElementById("curWxImg").src = getDarkHoursIcon(wx.altImg1);
+                    if (wx.altImg1 == 'Sunny' || wx.altImg1 == 'Mostly sunny') {
+                        desc.innerHTML = "Clear";
+                    }
+                }
+                else {
+                    document.querySelector(".body").style.background = "url('bg2.jpg')";
+                    document.getElementById("curWxImg").src = wx.img1;
+                    desc.innerHTML = wx.altImg1;
+                }
+
+                temp.innerHTML = Math.round(wx.curTemp) + '°';                                
+                highlow.innerHTML = 'H: ' + Math.round(wx.high1) + '° / L: ' + Math.round(wx.low1) + '°';
+
+                var today = new Date();    
+                var dd = String(today.getDate()).padStart(2, '0');
+                console.log(today.getMonth());
+                var mm = realMonth[today.getMonth()]; //January is 0!
+                var yyyy = today.getFullYear();   
+                curDate.innerText = weekday[today.getDay()] + ', ' + mm + ' ' + dd + ', ' + yyyy;
+
+                curRainPerc.innerHTML = wx.rain + ' Chance of Rain';
+                curWindyness.innerHTML = 'Wind: ' + wx.curWind; 
+
+                dow1.innerHTML = 'Today';
+                document.getElementById("FcImg1").src = wx.img1;
+                FcHiLow1.innerHTML = Math.round(wx.high1) + '° ' + Math.round(wx.low1) + '°';
+
+                dow2.innerHTML = fullDayName(wx.head2);
+                document.getElementById("FcImg2").src = wx.img2;
+                FcHiLow2.innerHTML = Math.round(wx.high2) + '° ' + Math.round(wx.low2) + '°';
+
+                dow3.innerHTML = fullDayName(wx.head3);
+                document.getElementById("FcImg3").src = wx.img3;
+                FcHiLow3.innerHTML = Math.round(wx.high3) + '° ' + Math.round(wx.low3) + '°';
+
+                dow4.innerHTML = fullDayName(wx.head4);
+                document.getElementById("FcImg4").src = wx.img4;
+                FcHiLow4.innerHTML = Math.round(wx.high4) + '° ' + Math.round(wx.low4) + '°';
+
+                dow5.innerHTML = fullDayName(wx.head5);
+                document.getElementById("FcImg5").src = wx.img5;
+                FcHiLow5.innerHTML = Math.round(wx.high5) + '° ' + Math.round(wx.low5) + '°';
+
+                //#region Get Verbose Wx
+                
+                const res2 = await fetch('http://localhost:3000/verbose');
+                const vwx = await res2.json();
+
+                document.querySelector(".dayDesc").innerHTML = '<br>' + vwx.todayVerbose.substring(4);
+                document.querySelector(".nightDesc").innerHTML = '<br>' + vwx.tonightVerbose.substring(6);
+                //#endregion
+
+            } 
+            loadWeather();           
+        </script>        
+    </body>
+</html>
